@@ -127,7 +127,7 @@
                     } else {
                         $.ajax({
                             type: 'POST',
-                            url: '/LoginEmail',
+                            url: '${pageContext.request.contextPath}/LoginEmail',
                             data: { email: email },
                             success: function(response){
                                 if (response.trim() === "Not registered") {
