@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import model.CartItem;
 import model.Product;
+import model.User;
+import dao.CartDAO;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
@@ -69,6 +71,23 @@ public class CartServlet extends HttpServlet {
         }
         session.setAttribute("cartSize", totalItems);
         
+        // Check if user is logged in and save cart to database
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            // Get the current cart item (either the existing one with increased quantity or the new one)
+            CartItem currentItem = null;
+            for (CartItem item : cart) {
+                if (item.getProduct().getId() == productId) {
+                    currentItem = item;
+                    break;
+                }
+            }
+            
+            // Save to database using CartDAO
+            CartDAO cartDAO = new CartDAO();
+            cartDAO.addCartItem(user.getId(), currentItem);
+        }
+        
         // Redirect back to product page
         response.sendRedirect(request.getContextPath() + "/ProductServlet");
     }
@@ -76,6 +95,25 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        
+        // If user is logged in, load cart from database
+        if (user != null) {
+            CartDAO cartDAO = new CartDAO();
+            List<CartItem> dbCart = cartDAO.getCartItems(user.getId());
+            
+            // Update session cart with database cart
+            session.setAttribute("cart", dbCart);
+            
+            // Calculate total items
+            int totalItems = 0;
+            for (CartItem item : dbCart) {
+                totalItems += item.getQuantity();
+            }
+            session.setAttribute("cartSize", totalItems);
+        }
+        
         // Forward to the cart JSP page
         request.getRequestDispatcher("/JSP/Cart.jsp").forward(request, response);
     }

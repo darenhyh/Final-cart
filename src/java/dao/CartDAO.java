@@ -23,7 +23,7 @@ public class CartDAO {
             conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
             
             // Check if user already has a cart
-            String cartQuery = "SELECT CartID FROM APP.Cart WHERE UserID = ?";
+            String cartQuery = "SELECT \"CartID\" FROM APP.\"Cart\" WHERE \"UserID\" = ?";
             stmt = conn.prepareStatement(cartQuery);
             stmt.setInt(1, userId);
             rs = stmt.executeQuery();
@@ -67,7 +67,7 @@ public class CartDAO {
                 stmt.executeUpdate();
             } else {
                 // Add new cart item
-                String insertQuery = "INSERT INTO APP.CartDetails (CartID, ProductID, Quantity) VALUES (?, ?, ?)";
+                String insertQuery = "INSERT INTO APP.\"CartDetails\" (\"CartID\", \"ProductID\", \"Quantity\") VALUES (?, ?, ?)";
                 stmt = conn.prepareStatement(insertQuery);
                 stmt.setInt(1, cartId);
                 stmt.setInt(2, item.getProduct().getId());
@@ -113,9 +113,9 @@ public class CartDAO {
                 
                 // Get cart items with product information
                 String itemsQuery = "SELECT cd.CartDetailID, cd.ProductID, cd.Quantity, " +
-                                   "p.PRODUCTNAME, p.DESCRIPTION, p.CATEGORY, p.PRICE, p.STOCK_QUANTITY, p.IMAGE_URL " +
+                                   "p.\"PRODUCTNAME\", p.\"DESCRIPTION\", p.\"CATEGORY\", p.\"PRICE\", p.\"STOCK_QUANTITY\", p.\"IMAGE_URL\" " +
                                    "FROM APP.CartDetails cd " +
-                                   "JOIN APP.PRODUCTS p ON cd.ProductID = p.PRODUCT_ID " +
+                                   "JOIN APP.\"PRODUCTS\" p ON cd.\"ProductID\" = p.\"PRODUCT_ID\"" +
                                    "WHERE cd.CartID = ?";
                                    
                 stmt = conn.prepareStatement(itemsQuery);
