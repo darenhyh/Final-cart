@@ -81,10 +81,10 @@ public class OrderConfirmedServlet extends HttpServlet {
         ResultSet rs = null;
         
         try {
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/glowydays", "nbuser", "nbuser");
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
             
             // 1. Save orders
-            String orderSql = "INSERT INTO NBUSER.ORDERS " +
+            String orderSql = "INSERT INTO APP.ORDERS " +
                             "(\"orderId\", \"userId\", \"orderDate\", \"paymentId\", \"shippingId\", \"subtotal\", \"taxAmount\", \"deliveryFee\", \"totalAmount\") " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?)";
             
@@ -101,7 +101,7 @@ public class OrderConfirmedServlet extends HttpServlet {
             pstmt.executeUpdate();
             
             // 2. Save order items
-            String itemSql = "INSERT INTO NBUSER.ORDERITEMS " +
+            String itemSql = "INSERT INTO APP.ORDERITEMS " +
                            "(\"orderId\", \"productId\", \"productName\", \"quantity\", \"unitPrice\", \"subtotal\") " +
                            "VALUES (?, ?, ?, ?, ?, ?)";
             
@@ -127,8 +127,8 @@ public class OrderConfirmedServlet extends HttpServlet {
         PreparedStatement pstmt = null;
         
         try {
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/glowydays", "nbuser", "nbuser");
-            String updateSql = "UPDATE NBUSER.PRODUCTS SET stock = stock - ? WHERE \"productId\" = ?";
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
+            String updateSql = "UPDATE APP.PRODUCTS SET stock = stock - ? WHERE \"productId\" = ?";
             pstmt = conn.prepareStatement(updateSql);
             
             for (CartItem item : cartItems) {

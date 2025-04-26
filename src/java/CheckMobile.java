@@ -1,51 +1,43 @@
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.*;
 
-@WebServlet("/LoginEmail")
-public class LoginEmail extends HttpServlet {
+@WebServlet("/CheckMobile")
+public class CheckMobile extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String email = request.getParameter("email");
+        String mobileNo = request.getParameter("mobileNo");
         Connection conn = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
 
-        // Email validation using regex (must contain "@" and ".")
-        if (email == null || !email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-            response.setContentType("text/plain");
-            response.getWriter().print("Invalid Email Format");
-            return;
-        }
-
         try {
             // Load Derby Driver
-//            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            // Connect to the Database
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
 
-            // Connect to the Derby Database
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "", "");
-
-            // Check if email already exists
-            String query = "SELECT * FROM \"USER\" WHERE \"email\" = ?";
+            // Check if username already exists
+            String query = "SELECT * FROM \"USER\" WHERE \"mobileNo\" = ?";
             pst = conn.prepareStatement(query);
-            pst.setString(1, email);
+            pst.setString(1, mobileNo);
             rs = pst.executeQuery();
 
             response.setContentType("text/plain");
             PrintWriter out = response.getWriter();
 
             if (rs.next()) {
-                out.print("Registered"); // Valid email
+                out.print("Already Exists"); // mobile no is taken
             } else {
-                out.print("Not registered"); // Email not registered
+                out.print(""); // mobile no is available
             }
         } catch (Exception e) {
             response.getWriter().print("Database Error: " + e.getMessage());
