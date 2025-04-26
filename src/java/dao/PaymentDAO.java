@@ -75,7 +75,10 @@ public class PaymentDAO {
             try {
                 if (payStmt != null) payStmt.close();
                 if (methodStmt != null) methodStmt.close();
-                if (con != null) con.close();
+                if (con != null) {
+                    con.setAutoCommit(true); // Reset auto-commit mode
+                    con.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -84,84 +87,72 @@ public class PaymentDAO {
         return success;
     }
     
-    // ✅ 新增方法：通过 cardNumber 查询最新的 paymentId
-    public int getPaymentIdByCardNumber(String cardNumber) throws Exception {
+    public int getPaymentIdByCardNumber(String cardNumber) {
         int paymentId = 0;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = getConnection();
+            String sql = "SELECT p.\"paymentId\" FROM APP.PAYMENT p " +
+                         "JOIN APP.PAYMENTMETHOD pm ON p.\"methodId\" = pm.\"methodId\" " +
+                         "WHERE pm.\"cardNumber\" = ? " +
+                         "ORDER BY p.\"paymentId\" DESC FETCH FIRST ROW ONLY";
 
-        try (Connection conn = getConnection()) {
-            String sql = "SELECT paymentId FROM APP.PAYMENT " +
-                         "WHERE methodId = (SELECT MAX(methodId) FROM APP.PAYMENTMETHOD WHERE cardNumber = ?) " +
-                         "ORDER BY paymentId DESC FETCH FIRST ROW ONLY";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, cardNumber);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                paymentId = rs.getInt("paymentId");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
 
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, cardNumber);
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    paymentId = rs.getInt("paymentId");
-                }
+        return paymentId;
+    }
+    
+    // New method to get the latest payment ID by method name
+    public int getLatestPaymentIdByMethod(String methodName) {
+        int paymentId = 0;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = getConnection();
+            String sql = "SELECT p.\"paymentId\" FROM APP.PAYMENT p " +
+                         "JOIN APP.PAYMENTMETHOD pm ON p.\"methodId\" = pm.\"methodId\" " +
+                         "WHERE pm.\"methodName\" = ? " +
+                         "ORDER BY p.\"paymentId\" DESC FETCH FIRST ROW ONLY";
+
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, methodName);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                paymentId = rs.getInt("paymentId");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
         return paymentId;
     }
 }
-
-// FOR TESTING PURPOSE
-//    public List<PaymentMethod> getAllPaymentMethods() {
-//        List<PaymentMethod> methods = new ArrayList<>();
-//        Connection con = null;
-//        PreparedStatement stmt = null;
-//        ResultSet rs = null;
-//
-//        try {
-//            con = getConnection();
-//            String sql = "SELECT * FROM NBUSER.PAYMENTMETHOD";
-//            stmt = con.prepareStatement(sql);
-//            rs = stmt.executeQuery();
-//
-//            while (rs.next()) {
-//                PaymentMethod method = new PaymentMethod();
-//                method.setMethodId(rs.getInt("methodId"));
-//                method.setMethodName(rs.getString("methodName"));
-//                method.setCardOwner(rs.getString("cardOwner"));
-//                method.setCardNumber(rs.getString("cardNumber"));
-//                method.setExpMonth(rs.getString("expMonth"));
-//                method.setExpYear(rs.getString("expYear"));
-//                method.setCvv(rs.getString("cvv"));
-//                methods.add(method);
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                if (rs != null) rs.close();
-//                if (stmt != null) stmt.close();
-//                if (con != null) con.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        return methods;
-//    }
-//
-//    public static void main(String[] args) {
-//        PaymentDAO dao = new PaymentDAO();
-//
-//        // Test: Retrieve and print all payment methods
-//        List<PaymentMethod> methodList = dao.getAllPaymentMethods();
-//        if (methodList.isEmpty()) {
-//            System.out.println("No payment methods found.");
-//        } else {
-//            for (PaymentMethod method : methodList) {
-//                System.out.println("Method ID: " + method.getMethodId());
-//                System.out.println("Method Name: " + method.getMethodName());
-//                System.out.println("Card Owner: " + method.getCardOwner());
-//                System.out.println("Card Number: " + method.getCardNumber());
-//                System.out.println("Expiry: " + method.getExpMonth() + "/" + method.getExpYear());
-//                System.out.println("CVV: " + method.getCvv());
-//                System.out.println("---------------------------");
-//            }
-//        }
-//    }
