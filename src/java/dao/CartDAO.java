@@ -9,7 +9,7 @@ import java.util.List;
 public class CartDAO {
     
     private static final String JDBC_URL = "jdbc:derby://localhost:1527/product";
-    private static final String USERNAME = "user";
+    private static final String USERNAME = "userrrrrrrr";
     private static final String PASSWORD = "pass";
     
     // Save cart item to database
@@ -34,7 +34,7 @@ public class CartDAO {
                 cartId = rs.getInt("CartID");
             } else {
                 // Create a new cart for the user
-                String createCartQuery = "INSERT INTO APP.Cart (UserID) VALUES (?)";
+                String createCartQuery = "INSERT INTO Cart (UserID) VALUES (?)";
                 stmt = conn.prepareStatement(createCartQuery, Statement.RETURN_GENERATED_KEYS);
                 stmt.setInt(1, userId);
                 stmt.executeUpdate();

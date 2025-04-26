@@ -66,7 +66,7 @@ public class OrderConfirmedServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "Order confirmation failed: " + e.getMessage());
-            response.sendRedirect(request.getContextPath() + "");
+            response.sendRedirect(request.getContextPath() + "/CartServlet");
         }
     }
     

@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import model.CartItem;
-import model.User;
-import dao.CartDAO;
 
 @WebServlet("/RemoveFromCartServlet")
 public class RemoveFromCartServlet extends HttpServlet {
@@ -23,23 +21,14 @@ public class RemoveFromCartServlet extends HttpServlet {
         
         if (cart != null) {
             int productId = Integer.parseInt(request.getParameter("productId"));
-            int cartItemId = -1;
             
             Iterator<CartItem> iterator = cart.iterator();
             while (iterator.hasNext()) {
                 CartItem item = iterator.next();
                 if (item.getProduct().getId() == productId) {
-                    cartItemId = item.getId(); // Get cart item ID for database removal
                     iterator.remove();
                     break;
                 }
-            }
-            
-            // Check if user is logged in and remove from database
-            User user = (User) session.getAttribute("user");
-            if (user != null && cartItemId != -1) {
-                CartDAO cartDAO = new CartDAO();
-                cartDAO.removeCartItem(cartItemId);
             }
             
             // Recalculate total items in cart

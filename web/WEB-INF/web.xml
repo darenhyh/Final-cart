@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
     <servlet>
-        <servlet-name>ProductServlet</servlet-name>
-        <servlet-class>ProductServlet</servlet-class>
+        <servlet-name>PaymentServlet</servlet-name>
+        <servlet-class>PaymentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ValidateShippingServlet</servlet-name>
+        <servlet-class>ValidateShippingServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ValidatePaymentServlet</servlet-name>
+        <servlet-class>ValidatePaymentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PaymentShippingServlet</servlet-name>
+        <servlet-class>PaymentShippingServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>OrderConfirmedServlet</servlet-name>
+        <servlet-class>OrderConfirmedServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ProductServlet</servlet-name>
-        <url-pattern>/ProductServlet</url-pattern>
+        <servlet-name>PaymentServlet</servlet-name>
+        <url-pattern>/PaymentServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ValidateShippingServlet</servlet-name>
+        <url-pattern>/ValidateShippingServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ValidatePaymentServlet</servlet-name>
+        <url-pattern>/ValidatePaymentServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PaymentShippingServlet</servlet-name>
+        <url-pattern>/PaymentShippingServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>OrderConfirmedServlet</servlet-name>
+        <url-pattern>/OrderConfirmedServlet</url-pattern>
     </servlet-mapping>
 </web-app>
