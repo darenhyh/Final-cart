@@ -144,7 +144,7 @@ public class LoginDAO {
     User user = null;
     try {
         Class.forName("org.apache.derby.jdbc.ClientDriver");
-        Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
+        Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
 
         String sql = "SELECT * FROM \"USER\" WHERE \"email\" = ?";
         PreparedStatement pst = con.prepareStatement(sql);

@@ -23,7 +23,7 @@ public class CheckMobile extends HttpServlet {
             // Load Derby Driver
             Class.forName("org.apache.derby.jdbc.ClientDriver");
             // Connect to the Database
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbsuer", "nbsuer");
 
             // Check if username already exists
             String query = "SELECT * FROM \"USER\" WHERE \"mobileNo\" = ?";

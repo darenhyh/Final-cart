@@ -9,59 +9,76 @@ import java.util.ArrayList;
 import java.util.List;
 import model.CartItem;
 import model.Product;
+import model.User;
 import dao.CartDAO;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
         
-        // Get user ID from session (assuming user is logged in)
-        Integer userId = (Integer) session.getAttribute("userId");
+        // If user is logged in, get their cart from database
+        User user = (User) session.getAttribute("user");
+        if (user != null && (cart == null || cart.isEmpty())) {
+            CartDAO cartDAO = new CartDAO();
+            cart = cartDAO.getCartItems(user.getId());
+            session.setAttribute("cart", cart);
+            
+            // Calculate total items in cart
+            int totalItems = 0;
+            for (CartItem item : cart) {
+                totalItems += item.getQuantity();
+            }
+            session.setAttribute("cartSize", totalItems);
+        }
         
-        // Get or create cart in session
+        // Forward to cart JSP page
+        request.getRequestDispatcher("/JSP/Cart.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        // Get cart from session or create a new one if it doesn't exist
+        HttpSession session = request.getSession();
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
         if (cart == null) {
             cart = new ArrayList<>();
             session.setAttribute("cart", cart);
         }
         
-        // Get product info from form
+        // Get product information from request parameters
         int productId = Integer.parseInt(request.getParameter("PRODUCT_ID"));
         String productName = request.getParameter("PRODUCTNAME");
-        double price = Double.parseDouble(request.getParameter("PRICE"));
+        double productPrice = Double.parseDouble(request.getParameter("PRICE"));
+        String imageUrl = request.getParameter("IMAGE_URL");
         
-        // Create a product object from the form data
+        // Create Product object
         Product product = new Product();
         product.setId(productId);
         product.setName(productName);
-        product.setPrice(price);
-        
-        // Add image URL to the product (we'll get this from a hidden field in the form)
-        String imageUrl = request.getParameter("IMAGE_URL");
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            product.setImageUrl(imageUrl);
-        } else {
-            // Default image if not provided
-            product.setImageUrl("default.jpg");
-        }
+        product.setPrice(productPrice);
+        product.setImageUrl(imageUrl);
         
         // Check if product already exists in cart
-        boolean found = false;
+        boolean productExists = false;
         for (CartItem item : cart) {
             if (item.getProduct().getId() == productId) {
+                // Increment quantity
                 item.setQuantity(item.getQuantity() + 1);
-                found = true;
+                productExists = true;
                 break;
             }
         }
         
-        // If product is not in cart, add it
-        if (!found) {
+        // If product doesn't exist in cart, add new item
+        if (!productExists) {
             CartItem newItem = new CartItem(product, 1);
             cart.add(newItem);
         }
@@ -73,31 +90,25 @@ public class CartServlet extends HttpServlet {
         }
         session.setAttribute("cartSize", totalItems);
         
-        // If user is logged in, save cart to database
-        if (userId != null) {
-            // Find the cart item that was just added/updated
-            CartItem itemToSave = null;
+        // Save to database if user is logged in
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            CartDAO cartDAO = new CartDAO();
+            // Find the item we just added or updated
             for (CartItem item : cart) {
                 if (item.getProduct().getId() == productId) {
-                    itemToSave = item;
+                    cartDAO.addCartItem(user.getId(), item);
                     break;
                 }
             }
-            
-            if (itemToSave != null) {
-                CartDAO cartDAO = new CartDAO();
-                cartDAO.addCartItem(userId, itemToSave);
-            }
         }
         
-        // Redirect back to product page
-        response.sendRedirect(request.getContextPath() + "/ProductServlet");
-    }
-    
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Forward to the cart JSP page
-        request.getRequestDispatcher("/JSP/Cart.jsp").forward(request, response);
+        // Redirect back to product page or to cart page based on request
+        String referer = request.getHeader("Referer");
+        if (referer != null && referer.contains("ProductServlet")) {
+            response.sendRedirect(referer);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/CartServlet");
+        }
     }
 }

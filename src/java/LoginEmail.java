@@ -28,10 +28,10 @@ public class LoginEmail extends HttpServlet {
 
         try {
             // Load Derby Driver
-//            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
 
             // Connect to the Derby Database
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "", "");
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbsuer", "nbsuer");
 
             // Check if email already exists
             String query = "SELECT * FROM \"USER\" WHERE \"email\" = ?";

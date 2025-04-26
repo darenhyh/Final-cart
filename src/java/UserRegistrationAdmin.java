@@ -41,7 +41,7 @@ public class UserRegistrationAdmin extends HttpServlet {
                     session.setAttribute("email", user.getEmail());           
                     session.setAttribute("mobileNo", user.getMobileNo());  
                     
-                    response.sendRedirect("/JSP/Login.jsp");
+                    response.sendRedirect("Login.jsp");
                 } else {
                     out.println("Registration Failed!");
                 }
