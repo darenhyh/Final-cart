@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.CartItem;
 import model.Product;
+import dao.CartDAO;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
@@ -18,6 +19,9 @@ public class CartServlet extends HttpServlet {
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
+        
+        // Get user ID from session (assuming user is logged in)
+        Integer userId = (Integer) session.getAttribute("userId");
         
         // Get or create cart in session
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
@@ -68,6 +72,23 @@ public class CartServlet extends HttpServlet {
             totalItems += item.getQuantity();
         }
         session.setAttribute("cartSize", totalItems);
+        
+        // If user is logged in, save cart to database
+        if (userId != null) {
+            // Find the cart item that was just added/updated
+            CartItem itemToSave = null;
+            for (CartItem item : cart) {
+                if (item.getProduct().getId() == productId) {
+                    itemToSave = item;
+                    break;
+                }
+            }
+            
+            if (itemToSave != null) {
+                CartDAO cartDAO = new CartDAO();
+                cartDAO.addCartItem(userId, itemToSave);
+            }
+        }
         
         // Redirect back to product page
         response.sendRedirect(request.getContextPath() + "/ProductServlet");

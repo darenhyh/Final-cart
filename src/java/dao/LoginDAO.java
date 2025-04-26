@@ -126,7 +126,7 @@ public class LoginDAO {
                 isRegistered = true;
                 System.out.println("✅ Registered user with role: " + user.getRole());
             } else {
-                System.out.println("⚠ No rows inserted!");
+                System.out.println("⚠️ No rows inserted!");
             }
 
             pst.close();

@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 import model.CartItem;
+import model.User;
+import dao.CartDAO;
 
 @WebServlet("/UpdateCartServlet")
 public class UpdateCartServlet extends HttpServlet {
@@ -21,12 +23,21 @@ public class UpdateCartServlet extends HttpServlet {
         if (cart != null) {
             int productId = Integer.parseInt(request.getParameter("productId"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
+            int cartItemId = -1;
             
             for (CartItem item : cart) {
                 if (item.getProduct().getId() == productId) {
                     item.setQuantity(quantity);
+                    cartItemId = item.getId();
                     break;
                 }
+            }
+            
+            // Check if user is logged in and update in database
+            User user = (User) session.getAttribute("user");
+            if (user != null && cartItemId != -1) {
+                CartDAO cartDAO = new CartDAO();
+                cartDAO.updateCartItem(cartItemId, quantity);
             }
             
             // Recalculate total items in cart

@@ -7,43 +7,35 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import dao.LoginDAO;
-import dao.CartDAO;
 import model.Login;
 import model.User;
-import model.CartItem;
-import java.util.List;
 
 @WebServlet("/UserLogin")
 public class UserLogin extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
         try (PrintWriter out = response.getWriter()) {
             String email = request.getParameter("email");
             String password = request.getParameter("password");
+
             Login login = new Login();
             login.setEmail(email);
             login.setPassword(password);
+
             LoginDAO loginDAO = new LoginDAO();
             User user = loginDAO.getUserByLogin(login); // returns full user info if successful
+
             if (user != null) {
                 HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                session.setAttribute("role", user.getRole());
+                session.setAttribute("user", user);           // stores the full user object
+                session.setAttribute("role", user.getRole());  // stores the role
+                session.setAttribute("userId", user.getId()); // <-- store user_id here!
                 
-                // Load user's cart from database
-                CartDAO cartDAO = new CartDAO();
-                List<CartItem> dbCart = cartDAO.getCartItems(user.getId());
-                session.setAttribute("cart", dbCart);
-                
-                // Calculate total items in cart
-                int totalItems = 0;
-                for (CartItem item : dbCart) {
-                    totalItems += item.getQuantity();
-                }
-                session.setAttribute("cartSize", totalItems);
                 
                 String role = user.getRole().trim().toLowerCase();
+
                 switch (role) {
                     case "manager":
                         response.sendRedirect("/JSP/AdminPanel.jsp");
@@ -58,16 +50,19 @@ public class UserLogin extends HttpServlet {
             } else {
                 out.println("Login Failed! Invalid email or password.");
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     // Handle both GET and POST requests
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

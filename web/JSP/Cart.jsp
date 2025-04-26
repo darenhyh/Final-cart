@@ -335,7 +335,7 @@
                             <div class="item-price">RM<%= df.format(item.getSubtotal()) %></div>
 
                             <form action="<%= request.getContextPath() %>/UpdateCartServlet" method="POST" class="quantity-selector">
-                                <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
+                                <input type="hidden" name="productId" value="<%= item.getProduct()%>">
                                 <select name="quantity" onchange="updatePrice(this, <%= item.getProduct().getPrice() %>)">
                                     <% for (int i = 1; i <= 10; i++) { %>
                                         <option value="<%= i %>" <%= (item.getQuantity() == i) ? "selected" : "" %>><%= i %></option>
@@ -345,7 +345,7 @@
 
                             <div class="item-actions">
                                 <form action="<%= request.getContextPath() %>/RemoveFromCartServlet" method="POST">
-                                    <input type="hidden" name="productId" value="<%= item.getProduct().getId() %>">
+                                    <input type="hidden" name="productId" value="<%= item.getProduct()%>">
                                     <button type="submit" class="remove-btn">✕</button>
                                 </form>
                                 <button class="action-btn">♡</button>
@@ -389,7 +389,7 @@
                     <a href="#" class="promo-link">USE A PROMO CODE</a>
                 </div>
 
-                <a href="<%= request.getContextPath() %>/PaymentShippingForm.jsp" class="checkout-btn">
+                <a href="<%= request.getContextPath() %>/JSP/PaymentShippingForm.jsp" class="checkout-btn">
                     <span>CHECKOUT</span>
                     <span>→</span>
                 </a>
