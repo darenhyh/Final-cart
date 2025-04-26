@@ -13,7 +13,7 @@ public class PaymentDAO {
 
     private Connection getConnection() throws Exception {
         Class.forName("org.apache.derby.jdbc.ClientDriver");
-        return DriverManager.getConnection("jdbc:derby://localhost:1527/glowydays", "nbuser", "nbuser");
+        return DriverManager.getConnection("jdbc:derby://localhost:1527/product", "u", "u");
     }
 
     public boolean savePayment(PaymentMethod method) {
@@ -30,7 +30,7 @@ public class PaymentDAO {
             con.setAutoCommit(false);
                         
             // 1. Insert PaymentMethod
-            String methodSql = "INSERT INTO NBUSER.PAYMENTMETHOD(\"methodName\", \"cardOwner\", \"cardNumber\", \"expMonth\", \"expYear\", \"cvv\") VALUES (?, ?, ?, ?, ?, ?)";
+            String methodSql = "INSERT INTO APP.PAYMENTMETHOD(\"methodName\", \"cardOwner\", \"cardNumber\", \"expMonth\", \"expYear\", \"cvv\") VALUES (?, ?, ?, ?, ?, ?)";
             methodStmt = con.prepareStatement(methodSql, Statement.RETURN_GENERATED_KEYS);
             methodStmt.setString(1, method.getMethodName());
             methodStmt.setString(2, method.getCardOwner());
@@ -49,7 +49,7 @@ public class PaymentDAO {
             }
 
             // 2. Insert payment
-            String paySql = "INSERT INTO NBUSER.PAYMENT(\"methodId\", \"paidDate\", \"paidTime\") VALUES (?, ?, ?)";
+            String paySql = "INSERT INTO APP.PAYMENT(\"methodId\", \"paidDate\", \"paidTime\") VALUES (?, ?, ?)";
             payStmt = con.prepareStatement(paySql);
             payStmt.setInt(1, methodId);
             payStmt.setDate(2, Date.valueOf(LocalDate.now()));
@@ -89,8 +89,8 @@ public class PaymentDAO {
         int paymentId = 0;
 
         try (Connection conn = getConnection()) {
-            String sql = "SELECT paymentId FROM NBUSER.PAYMENT " +
-                         "WHERE methodId = (SELECT MAX(methodId) FROM NBUSER.PAYMENTMETHOD WHERE cardNumber = ?) " +
+            String sql = "SELECT paymentId FROM APP.PAYMENT " +
+                         "WHERE methodId = (SELECT MAX(methodId) FROM APP.PAYMENTMETHOD WHERE cardNumber = ?) " +
                          "ORDER BY paymentId DESC FETCH FIRST ROW ONLY";
 
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {

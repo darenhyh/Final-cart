@@ -12,7 +12,7 @@ public class ShippingDAO {
     
     private Connection getConnection() throws Exception {
         Class.forName("org.apache.derby.jdbc.ClientDriver");
-        return DriverManager.getConnection("jdbc:derby://localhost:1527/glowydays", "nbuser", "nbuser");
+        return DriverManager.getConnection("jdbc:derby://localhost:1527/product", "u", "u");
     }
 
     public boolean saveShipping(BuyerDetail buyer, Address address) {
@@ -30,7 +30,7 @@ public class ShippingDAO {
             con.setAutoCommit(false);
 
             // 1. Insert BuyerDetail
-            String buyerSql = "INSERT INTO NBUSER.BUYERDETAIL (\"fullName\", \"email\", \"mobile\") VALUES (?, ?, ?)";
+            String buyerSql = "INSERT INTO APP.BUYERDETAIL (\"fullName\", \"email\", \"mobile\") VALUES (?, ?, ?)";
             buyerStmt = con.prepareStatement(buyerSql, Statement.RETURN_GENERATED_KEYS);
             buyerStmt.setString(1, buyer.getFullName());
             buyerStmt.setString(2, buyer.getEmail());
@@ -46,7 +46,7 @@ public class ShippingDAO {
             }
             
             // 2. Insert Address
-            String addressSql = "INSERT INTO NBUSER.ADDRESS (\"address\", \"city\", \"state\", \"postcode\") VALUES (?, ?, ?, ?)";
+            String addressSql = "INSERT INTO APP.ADDRESS (\"address\", \"city\", \"state\", \"postcode\") VALUES (?, ?, ?, ?)";
             addressStmt = con.prepareStatement(addressSql, Statement.RETURN_GENERATED_KEYS);
             addressStmt.setString(1, address.getAddress());
             addressStmt.setString(2, address.getCity());
@@ -63,7 +63,7 @@ public class ShippingDAO {
             }
 
             // 3. Insert ShippingDetail (linking buyerId & addressId)
-            String shipSql = "INSERT INTO NBUSER.SHIPPINGDETAIL(\"buyerId\", \"addressId\") VALUES (?, ?)";
+            String shipSql = "INSERT INTO APP.SHIPPINGDETAIL(\"buyerId\", \"addressId\") VALUES (?, ?)";
             shipStmt = con.prepareStatement(shipSql);
             shipStmt.setInt(1, buyerId);
             shipStmt.setInt(2, addressId);
@@ -102,8 +102,8 @@ public class ShippingDAO {
 
         try (Connection conn = getConnection()) {
             // Derby-compatible query to get the most recent shippingId
-            String sql = "SELECT sd.\"shippingId\" FROM NBUSER.SHIPPINGDETAIL sd " +
-                        "JOIN NBUSER.BUYERDETAIL bd ON sd.\"buyerId\" = bd.\"buyerId\" " +
+            String sql = "SELECT sd.\"shippingId\" FROM APP.SHIPPINGDETAIL sd " +
+                        "JOIN APP.BUYERDETAIL bd ON sd.\"buyerId\" = bd.\"buyerId\" " +
                         "WHERE bd.\"email\" = ? AND bd.\"mobile\" = ? " +
                         "ORDER BY sd.\"shippingId\" DESC";
 
@@ -120,8 +120,8 @@ public class ShippingDAO {
         return shippingId;
     }
 }
-
-// FOR TESTING PURPOSE
+//
+////FOR TESTING PURPOSE
 //package dao;
 //
 //import model.Address;
@@ -136,7 +136,7 @@ public class ShippingDAO {
 //    
 //    private Connection getConnection() throws Exception {
 //        Class.forName("org.apache.derby.jdbc.ClientDriver");
-//        return DriverManager.getConnection("jdbc:derby://localhost:1527/glowydays", "nbuser", "nbuser");
+//        return DriverManager.getConnection("jdbc:derby://localhost:1527/product", "u", "u");
 //    }
 //
 //    public int getShippingIdByEmailAndMobile(String email, String mobile) throws Exception {
@@ -144,8 +144,8 @@ public class ShippingDAO {
 //
 //        try (Connection conn = getConnection()) {
 //            // Derby-compatible query to get the most recent shippingId
-//            String sql = "SELECT sd.\"shippingId\" FROM NBUSER.SHIPPINGDETAIL sd " +
-//                        "JOIN NBUSER.BUYERDETAIL bd ON sd.\"buyerId\" = bd.\"buyerId\" " +
+//            String sql = "SELECT sd.\"shippingId\" FROM APP.SHIPPINGDETAIL sd " +
+//                        "JOIN APP.BUYERDETAIL bd ON sd.\"buyerId\" = bd.\"buyerId\" " +
 //                        "WHERE bd.\"email\" = ? AND bd.\"mobile\" = ? " +
 //                        "ORDER BY sd.\"shippingId\" DESC";
 //
@@ -169,8 +169,8 @@ public class ShippingDAO {
 //            // 1. First get a real email/mobile pair from your database
 //            Connection conn = dao.getConnection();
 //            String getTestDataSql = "SELECT bd.\"email\", bd.\"mobile\", MAX(sd.\"shippingId\") as latestId " +
-//                                  "FROM NBUSER.SHIPPINGDETAIL sd " +
-//                                  "JOIN NBUSER.BUYERDETAIL bd ON sd.\"buyerId\" = bd.\"buyerId\" " +
+//                                  "FROM APP.SHIPPINGDETAIL sd " +
+//                                  "JOIN APP.BUYERDETAIL bd ON sd.\"buyerId\" = bd.\"buyerId\" " +
 //                                  "GROUP BY bd.\"email\", bd.\"mobile\" " +
 //                                  "ORDER BY latestId DESC " +
 //                                  "FETCH FIRST 1 ROW ONLY";

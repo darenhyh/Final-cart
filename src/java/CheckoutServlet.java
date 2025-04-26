@@ -61,7 +61,7 @@ public class CheckoutServlet extends HttpServlet {
         session.setAttribute("validEmail", false); // Initially set email validation to false
         
         // Forward to payment shipping page
-        request.getRequestDispatcher("/JSP/PaymentShipping.jsp").forward(request, response);
+        request.getRequestDispatcher("/JSP/PaymentShippingForm.jsp").forward(request, response);
     }
     
     @Override

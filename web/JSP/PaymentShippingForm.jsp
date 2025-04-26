@@ -5,7 +5,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Payment Shipping Form</title>
-    <link href="../CSS/payment.css" rel="stylesheet" type="text/css">
+    <link href="CSS/payment.css" rel="stylesheet" type="text/css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -79,10 +79,10 @@
                         <input type="hidden" name="payment_method" id="payment_method">
                         <div id="paymtMethodValidation"></div>
                         <div class="icon-container">
-                            <button type="button" id="cashIcon" class="cashIcon" data-method="cash"><img src="../ICON/cash.svg"></button>
-                            <button type="button" id="tngIcon" class="tngIcon" data-method="tng"><img src="../ICON/tng.svg"></button>
-                            <button type="button" id="visaIcon" class="visaIcon" data-method="visa"><img src="../ICON/visa.svg"></button>
-                            <button type="button" id="mcIcon" class="mcIcon" data-method="master"><img src="../ICON/mastercard.svg"></button>
+                            <button type="button" id="cashIcon" class="cashIcon" data-method="cash"><img src="ICON/cash.svg"></button>
+                            <button type="button" id="tngIcon" class="tngIcon" data-method="tng"><img src="ICON/tng.svg"></button>
+                            <button type="button" id="visaIcon" class="visaIcon" data-method="visa"><img src="ICON/visa.svg"></button>
+                            <button type="button" id="mcIcon" class="mcIcon" data-method="master"><img src="ICON/mastercard.svg"></button>
                         </div>
                     </div>
                     
