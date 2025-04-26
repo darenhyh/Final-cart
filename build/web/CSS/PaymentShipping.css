@@ -1,0 +1,358 @@
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            padding: 40px;
+            color: #000;
+            background-color: #fff;
+        }
+        
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .checkout-form {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .order-summary {
+            width: 350px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .checkout-total {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .edit-link {
+            font-size: 14px;
+            text-decoration: none;
+            color: #000;
+            font-weight: normal;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #000;
+        }
+        
+        .form-control.error {
+            border-color: #ff3333;
+        }
+        
+        .form-control.valid {
+            border-color: #4CAF50;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .error-message {
+            color: #ff3333;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        
+        .checkbox-label input {
+            margin-right: 10px;
+        }
+        
+        .validation-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .validation-icon.valid {
+            color: #4CAF50;
+        }
+        
+        .validation-icon.invalid {
+            color: #ff3333;
+        }
+        
+        .address-info {
+            background-color: #f7f7f7;
+            padding: 15px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .delivery-option {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        .delivery-option.selected {
+            border-color: #000;
+        }
+        
+        .delivery-option-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .delivery-details {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .payment-option {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .payment-option:hover {
+            border-color: #000;
+        }
+        
+        .payment-logos {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .payment-logos img {
+            height: 25px;
+        }
+        
+        .security-note {
+            background-color: #f7f7f7;
+            padding: 15px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .security-note i {
+            margin-right: 10px;
+        }
+        
+        .next-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 15px 20px;
+            background-color: #000;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 25px;
+            text-decoration: none;
+        }
+        
+        .next-button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+        
+        .card-icons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .card-icons img {
+            height: 30px;
+        }
+        
+        .terms {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .terms a {
+            color: #000;
+        }
+        
+        .order-item {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .order-item-image {
+            width: 80px;
+            height: 80px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .order-item-image img {
+            max-width: 70px;
+            max-height: 70px;
+        }
+        
+        .order-item-details {
+            flex: 1;
+        }
+        
+        .order-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .order-item-price {
+            font-weight: bold;
+        }
+        
+        .order-item-info {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .tax-info {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .promo-section {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .promo-btn {
+            background-color: white;
+            border: 1px solid #000;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .promo-link {
+            text-decoration: none;
+            color: #000;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 20px 0;
+        }
+        
+        /* Dropdown style */
+        .dropdown {
+            position: relative;
+            width: 100%;
+        }
+        
+        .dropdown select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            appearance: none;
+            background-color: white;
+        }
+        
+        .dropdown::after {
+            content: "▼";
+            font-size: 12px;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        
+        /* Custom select style */
+        .custom-select {
+            position: relative;
+        }
+        
+        .custom-select::after {
+            content: "▼";
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            pointer-events: none;
+        }
