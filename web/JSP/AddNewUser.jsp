@@ -153,7 +153,7 @@
                     } else {
                         $.ajax({
                             type: 'POST',
-                            url: '/JSP/ValidateName', // Calls the servlet
+                            url: '/GlowyDays-master/ValidateName', // Calls the servlet
                             data: { name: fullName },
                             success: function (response) { // Renamed for clarity
                                 if (response.trim() === "Valid Name") {
@@ -187,7 +187,7 @@
                 if (username.length > 0) { // Only check if there's input
                     $.ajax({
                         type: 'POST',
-                        url: '/CheckName',
+                        url: '/GlowyDays-master/CheckName',
                         data: { username: username },
                         success: function(response){ // Renamed for clarity
                             if (response.trim() === "Already Exists") {
@@ -258,7 +258,7 @@
                     } else { // Valid email format, check if it already exists
                         $.ajax({
                             type: 'POST',
-                            url: '/CheckEmail',
+                            url: '/GlowyDays-master/CheckEmail',
                             data: { email: email },
                             success: function(response){
                                 if (response.trim() === "Already Exists") {
@@ -303,7 +303,7 @@
                     // Perform AJAX request
                     $.ajax({
                         type: 'POST',
-                        url: '/CheckMobile',
+                        url: '/GlowyDays-master/CheckMobile',
                         data: { mobileNo: mobileNo },
                         success: function(response){
                             if (response.trim() === "Already Exists") {
@@ -356,7 +356,7 @@
                 if (hasLowerCase && hasUpperCase && hasNumber && hasMinLength) {
                     $.ajax({
                         type: 'POST',
-                        url: '/CheckPassword',
+                        url: '/GlowyDays-master/CheckPassword',
                         data: { password: password },
                         success: function(response){
                             $('#passwordMessage span').remove(); // Remove previous messages
