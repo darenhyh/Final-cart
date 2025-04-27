@@ -26,7 +26,7 @@ public class StaffListServlet extends HttpServlet {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
             Connection conn = DriverManager.getConnection(
-                "jdbc:derby://localhost:1527/product", "user", "pass");
+                "jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT user_id, name, birth, email, mobileNo FROM Client WHERE ROLE = 'staff'");
 

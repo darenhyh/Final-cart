@@ -153,7 +153,7 @@
                     } else {
                         $.ajax({
                             type: 'POST',
-                            url: '/ValidateName', // Calls the servlet
+                            url: '/JSP/ValidateName', // Calls the servlet
                             data: { name: fullName },
                             success: function (response) { // Renamed for clarity
                                 if (response.trim() === "Valid Name") {

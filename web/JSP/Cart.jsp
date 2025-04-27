@@ -262,6 +262,15 @@
             }
         </style>
         <script>
+            function updatePrice(select, unitPrice) {
+                const quantity = parseInt(select.value);
+                const totalPrice = (unitPrice * quantity).toFixed(2);
+                const priceElement = select.closest('.item-details').querySelector('.item-price');
+                priceElement.innerHTML = 'RM' + totalPrice;
+                select.form.submit();
+            }
+        </script>
+        <script>
             // Function to update the displayed item price when quantity changes
             function updatePrice(select, unitPrice) {
                 const quantity = parseInt(select.value);
@@ -277,6 +286,7 @@
                 select.form.submit();
             }
         </script>
+
     </head>
     <body>
         <div class="container">
@@ -302,16 +312,16 @@
                 double taxRate = 0.16;
                 double taxAmount = subtotal * taxRate;
 
-                // Calculate delivery fee
+                // Calculate delivery fee (NEW: FREE if subtotal > 1000)
                 double deliveryFee = 0.0;
-                if (subtotal < 1000) {
-                    deliveryFee = 50.0; // RM50 delivery fee
+                if (subtotal <= 1000) {
+                    deliveryFee = 50.0;
                 }
 
-                // Calculate total
+                // Calculate total amount
                 double totalAmount = subtotal + taxAmount + deliveryFee;
 
-                // Store values in session for checkout
+                // Store values in session
                 session.setAttribute("subtotal", subtotal);
                 session.setAttribute("taxAmount", taxAmount);
                 session.setAttribute("deliveryFee", deliveryFee);
@@ -322,9 +332,7 @@
                 <div class="total-info">TOTAL [<%= cartSize%> items] <b>RM<%= df.format(totalAmount)%></b></div>
                 <div class="reservation-note">Items in your bag are not reserved — check out now to make them yours.</div>
 
-                <%
-                    for (CartItem item : cart) {
-                %>
+                <% for (CartItem item : cart) {%>
                 <div class="cart-item">
                     <div class="item-image">
                         <img src="<%= request.getContextPath()%>/ProductImages/<%= item.getProduct().getImageUrl()%>" alt="<%= item.getProduct().getName()%>">
@@ -343,13 +351,11 @@
                             </select>
                         </form>
 
-
                         <div class="item-actions">
                             <form action="<%= request.getContextPath()%>/RemoveFromCartServlet" method="POST">
                                 <input type="hidden" name="productId" value="<%= item.getProduct().getId()%>">
                                 <button type="submit" class="remove-btn">✕</button>
                             </form>
-
                             <button class="action-btn">♡</button>
                         </div>
                     </div>
@@ -380,10 +386,11 @@
                     <span>Total</span>
                     <span>RM<%= df.format(totalAmount)%></span>
                 </div>
-                <% if (subtotal < 1000) {%>
+
+                <% if (subtotal <= 1000) {%>
                 <div class="tax-info">Add RM<%= df.format(1000 - subtotal)%> more to qualify for free shipping</div>
                 <% } else { %>
-                <div class="tax-info">You have qualified for free shipping!</div>
+                <div class="tax-info" style="color:green;font-weight:bold;">You have qualified for FREE shipping! 🎉</div>
                 <% }%>
 
                 <div class="promo-section">

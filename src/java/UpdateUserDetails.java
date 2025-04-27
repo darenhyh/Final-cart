@@ -25,7 +25,7 @@ public class UpdateUserDetails extends HttpServlet {
 
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
 
             String sql = "UPDATE \"USER\" SET \"" + field + "\" = ? WHERE \"username\" = ?";
             stmt = conn.prepareStatement(sql);

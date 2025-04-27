@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 
 public class Product implements Serializable {
+
     private int id;
     private String name;
     private double price;
@@ -12,9 +13,11 @@ public class Product implements Serializable {
     private String imageUrl; // 
     private String createdAt;
     private String updatedAt;
+    private int quantity = 1; // add this
 
     // Constructors
-    public Product() {}
+    public Product() {
+    }
 
     public Product(int id, String name, double price, String description, String category, int stock, String imageUrl, String createdAt, String updatedAt) {
         this.id = id;
@@ -28,44 +31,85 @@ public class Product implements Serializable {
         this.updatedAt = updatedAt;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getName() {
+        return name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public double getPrice() {
+        return price;
+    }
 
-    public int getStock() { return stock; }
-    public void setStock(int stock) { this.stock = stock; }
+    public void setPrice(double price) {
+        this.price = price;
+    }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    
-    public void setCreatedAt (String createdAt) {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
-    
-    public String getCreatedAt () {
+
+    public String getCreatedAt() {
         return createdAt;
     }
-    
-     public void setUpdatedAt (String updatedAt) {
+
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
-    
-    public String getUpdatedAt () {
+
+    public String getUpdatedAt() {
         return updatedAt;
     }
-    
-    
-    
+
 }
