@@ -13,9 +13,9 @@ public class LoginDAO {
 
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
-            Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
+            Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
 
-            String sql = "SELECT * FROM \"USER\" WHERE \"email\" = ? AND \"password\" = ?";
+            String sql = "SELECT * FROM APP.\"USER\" WHERE \"email\" = ? AND \"password\" = ?";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, login.getEmail());
             pst.setString(2, login.getPassword());
@@ -24,10 +24,25 @@ public class LoginDAO {
 
             if (rs.next()) {
                 isLogin = true;
-                String username = rs.getString("username");  // 从数据库取出 username
+                String userID = rs.getString("user_id");
+                String username = rs.getString("username"); 
+                String name = rs.getString("name");
+                Date birth = rs.getDate("birth");
+                String email = rs.getString("email");
+                String mobileNo = rs.getString("mobileNo");// 从数据库取出 username
 
                 HttpSession session = request.getSession();
+                session.setAttribute("user_id", userID);
                 session.setAttribute("username", username);
+                session.setAttribute("name", name);
+                session.setAttribute("birth", birth != null ? birth.toString() : null);
+                session.setAttribute("email", email);
+                session.setAttribute("mobileNo", mobileNo);
+                
+                // Generate CartID for this user
+                int userIDInt = Integer.parseInt(userID); // Convert to int
+                int cartID = GenerateCartIDDAO.generateCartID(userIDInt); // Generate CartID
+                session.setAttribute("cart_id", cartID); // Store CartID in session
             }
 
             rs.close();
@@ -46,9 +61,9 @@ public class LoginDAO {
 
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
-            Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
+            Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
 
-            String sql = "SELECT * FROM \"USER\" WHERE \"email\" = ?";
+            String sql = "SELECT * FROM APP.\"USER\" WHERE \"email\" = ?";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, email);
 
@@ -73,9 +88,9 @@ public class LoginDAO {
 
     try {
         Class.forName("org.apache.derby.jdbc.ClientDriver");
-        Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
+        Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
 
-        String sql = "SELECT * FROM \"USER\" WHERE \"email\" = ? AND \"password\" = ?";
+        String sql = "SELECT * FROM APP.\"USER\" WHERE \"email\" = ? AND \"password\" = ?";
         PreparedStatement pst = con.prepareStatement(sql);
         pst.setString(1, login.getEmail());
         pst.setString(2, login.getPassword());
@@ -109,9 +124,9 @@ public class LoginDAO {
 
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
-            Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
+            Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
 
-            String sql = "INSERT INTO \"USER\" (\"name\", \"username\", \"birth\", \"email\", \"mobileNo\", \"password\", \"role\") VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO APP.\"USER\" (\"name\", \"username\", \"birth\", \"email\", \"mobileNo\", \"password\", \"role\") VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, user.getName());
             pst.setString(2, user.getUsername());
@@ -146,7 +161,7 @@ public class LoginDAO {
         Class.forName("org.apache.derby.jdbc.ClientDriver");
         Connection con = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "user", "pass");
 
-        String sql = "SELECT * FROM \"USER\" WHERE \"email\" = ?";
+        String sql = "SELECT * FROM APP.\"USER\" WHERE \"email\" = ?";
         PreparedStatement pst = con.prepareStatement(sql);
         pst.setString(1, email);
 

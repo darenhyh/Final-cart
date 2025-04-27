@@ -30,6 +30,12 @@ public class Product implements Serializable {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+    
+    public Product(int id, String name, double price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
 
     public int getQuantity() {
         return quantity;

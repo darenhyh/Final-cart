@@ -15,17 +15,27 @@ import java.util.List;
 import dao.ProductDAO;
 import jakarta.servlet.RequestDispatcher;
 import model.Product;
-/**@
+
+/**
+ * @
  *
  * @author yapji
  */
-@WebServlet("/ProductServlet" )
+@WebServlet("/ProductServlet")
 public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        String userID = (String) request.getSession().getAttribute("user_id");
+
+        if (userID == null) {
+            // If user is not logged in, maybe redirect to login page or show message
+            response.sendRedirect("Login.jsp");
+            return; // Stop further processing
+        }
+        
         ProductDAO productDAO = new ProductDAO();
         List<Product> productList = productDAO.getAllProducts();
 
@@ -37,24 +47,24 @@ public class ProductServlet extends HttpServlet {
 
         // Send product list to JSP
         request.setAttribute("products", productList);
+        request.setAttribute("userID", userID);
 
         // Forward to the JSP
         RequestDispatcher rd = request.getRequestDispatcher("/JSP/Product.jsp");
-        rd.forward(request, response); 
+        rd.forward(request, response);
     }
 
     @Override
     public String getServletInfo() {
         return "Handles product listing";
     }
-    
-public static void main(String[] args) {
-     ProductDAO productDAO = new ProductDAO();
+
+    public static void main(String[] args) {
+        ProductDAO productDAO = new ProductDAO();
         List<Product> productList = productDAO.getAllProducts();
 
-    System.out.println("Products fetched: " + productList.size());
+        System.out.println("Products fetched: " + productList.size());
 
-}
-  
-    
+    }
+
 }

@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import model.CartItem;
 import model.Product;
-import model.User;
 import dao.CartDAO;
+import java.sql.*;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
@@ -21,6 +21,7 @@ public class CartServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
+        int userID = Integer.parseInt((String) request.getSession().getAttribute("user_id"));
 
         // Get or create cart in session
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
@@ -31,6 +32,7 @@ public class CartServlet extends HttpServlet {
 
         // Get product info from form
         int productId = Integer.parseInt(request.getParameter("PRODUCT_ID"));
+        int quantity = Integer.parseInt(request.getParameter("quantity"));
         String productName = request.getParameter("PRODUCTNAME");
         double price = Double.parseDouble(request.getParameter("PRICE"));
 
@@ -39,6 +41,9 @@ public class CartServlet extends HttpServlet {
         product.setId(productId);
         product.setName(productName);
         product.setPrice(price);
+        product.setQuantity(quantity);
+
+        CartItem item = new CartItem(product, quantity);
 
         // Add image URL to the product (we'll get this from a hidden field in the form)
         String imageUrl = request.getParameter("IMAGE_URL");
@@ -51,9 +56,9 @@ public class CartServlet extends HttpServlet {
 
         // Check if product already exists in cart
         boolean found = false;
-        for (CartItem item : cart) {
-            if (item.getProduct().getId() == productId) {
-                item.setQuantity(item.getQuantity() + 1);
+        for (CartItem existingItem : cart) {
+            if (existingItem.getProduct().getId() == productId) {
+                existingItem.setQuantity(existingItem.getQuantity() + quantity);  // Update quantity
                 found = true;
                 break;
             }
@@ -61,35 +66,26 @@ public class CartServlet extends HttpServlet {
 
         // If product is not in cart, add it
         if (!found) {
-            CartItem newItem = new CartItem(product, 1);
-            cart.add(newItem);
+            cart.add(item);  // Add new item to cart
+        }
+
+        CartDAO cartDAO = new CartDAO();
+        try {
+            boolean isInserted = cartDAO.insertCartItem(userID, item);  // Insert into database
+            if (!isInserted) {
+                throw new ServletException("Failed to insert item into database.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new ServletException("Database error: " + e.getMessage());
         }
 
         // Calculate total items in cart
         int totalItems = 0;
-        for (CartItem item : cart) {
-            totalItems += item.getQuantity();
+        for (CartItem existingItem : cart) {
+            totalItems += existingItem.getQuantity();
         }
         session.setAttribute("cartSize", totalItems);
-
-        // Check if user is logged in and save cart to database
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            // Get the current cart item (either the existing one with increased quantity or the new one)
-            CartItem currentItem = null;
-            for (CartItem item : cart) {
-                if (item.getProduct().getId() == productId) {
-                    currentItem = item;
-                    break;
-                }
-            }
-
-            // Save to database using CartDAO
-            CartDAO cartDAO = new CartDAO();
-            // Use user.getId(), which returns a Long. If your DAO expects a primitive, 
-            // consider either adjusting the DAO method to accept a Long or unboxing it:
-            cartDAO.addCartItem(user.getId(), currentItem);
-        }
 
         // Redirect back to product page
         response.sendRedirect(request.getContextPath() + "/ProductServlet");
@@ -99,27 +95,17 @@ public class CartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
+        List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
 
-        // If user is logged in, load cart from database
-        if (user != null) {
-            CartDAO cartDAO = new CartDAO();
-            // Similarly, use user.getId() here
-            int userId = user.getId().intValue();
-            List<CartItem> dbCart = cartDAO.getCartItems(userId);
-
-            // Update session cart with database cart
-            session.setAttribute("cart", dbCart);
-
-            // Calculate total items
-            int totalItems = 0;
-            for (CartItem item : dbCart) {
-                totalItems += item.getQuantity();
-            }
-            session.setAttribute("cartSize", totalItems);
+        // If the cart is null, initialize it
+        if (cart == null) {
+            cart = new ArrayList<>();
+            session.setAttribute("cart", cart);
         }
 
-        // Forward to the cart JSP page
+        // Forward to a JSP page to display the cart (or send a response in some other way)
+        request.setAttribute("cart", cart);
         request.getRequestDispatcher("/JSP/Cart.jsp").forward(request, response);
     }
+
 }
