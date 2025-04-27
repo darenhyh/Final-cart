@@ -94,7 +94,10 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         HttpSession session = request.getSession();
+        
+        int userID = Integer.parseInt((String) request.getSession().getAttribute("user_id"));
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
 
         // If the cart is null, initialize it
@@ -102,9 +105,14 @@ public class CartServlet extends HttpServlet {
             cart = new ArrayList<>();
             session.setAttribute("cart", cart);
         }
+        CartDAO cartDAO = new CartDAO();
+        
+        List<CartItem> cartItems = cartDAO.getCartItems(userID);
 
+        
         // Forward to a JSP page to display the cart (or send a response in some other way)
-        request.setAttribute("cart", cart);
+        request.setAttribute("UserID", userID);
+        request.setAttribute("cartItems", cartItems);
         request.getRequestDispatcher("/JSP/Cart.jsp").forward(request, response);
     }
 

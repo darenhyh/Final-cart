@@ -15,6 +15,8 @@ import java.util.List;
 import dao.ProductDAO;
 import jakarta.servlet.RequestDispatcher;
 import model.Product;
+import dao.CartDAO;
+import model.CartItem;
 
 /**
  * @
@@ -38,6 +40,10 @@ public class ProductServlet extends HttpServlet {
         
         ProductDAO productDAO = new ProductDAO();
         List<Product> productList = productDAO.getAllProducts();
+        
+        CartDAO cartDAO = new CartDAO();
+        int userId = Integer.parseInt(userID); // Assuming user_id is stored as a string
+        List<CartItem> cartItems = cartDAO.getCartItems(userId);
 
         // Debugging output (this is fine)
         System.out.println("Product list size: " + productList.size());
@@ -47,6 +53,7 @@ public class ProductServlet extends HttpServlet {
 
         // Send product list to JSP
         request.setAttribute("products", productList);
+        request.setAttribute("cartItems", cartItems); // Make sure to pass cartItems too
         request.setAttribute("userID", userID);
 
         // Forward to the JSP
