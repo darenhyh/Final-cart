@@ -398,10 +398,12 @@
                     <a href="#" class="promo-link">USE A PROMO CODE</a>
                 </div>
 
-                <a href="<%= request.getContextPath()%>/JSP/PaymentShippingForm.jsp" class="checkout-btn">
-                    <span>CHECKOUT</span>
-                    <span>→</span>
-                </a>
+                <form action="<%= request.getContextPath()%>/CheckoutServlet" method="POST">
+                    <button type="submit" class="checkout-btn">
+                        <span>CHECKOUT</span>
+                        <span>→</span>
+                    </button>
+                </form>
 
                 <a href="<%= request.getContextPath()%>/ProductServlet" class="continue-shopping">CONTINUE SHOPPING</a>
             </div>

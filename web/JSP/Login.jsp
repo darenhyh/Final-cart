@@ -184,7 +184,7 @@
                             $('#passwordValidation').html('<span style="color:red; font-size:13px;">Invalid password! Please try again!</span>');
                             $('#password').val(''); // Clear password field after incorrect input
                         } else {
-                            window.location.href = '../ProductServlet'; // Redirect to home page if login is successful
+                            window.location.href = '/GlowyDays-master/LoadCartServlet'; // Redirect to home page if login is successful
                         }
                     },
                     error: function () {
