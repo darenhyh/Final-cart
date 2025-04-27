@@ -31,7 +31,7 @@ public class LoginEmail extends HttpServlet {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
 
             // Connect to the Derby Database
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/Client", "nbuser", "nbuser");
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/product", "nbuser", "nbuser");
 
             // Check if email already exists
             String query = "SELECT * FROM \"USER\" WHERE \"email\" = ?";

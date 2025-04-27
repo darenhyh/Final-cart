@@ -35,44 +35,49 @@ public class CartDAO {
 
     // Method to insert a new cart item
     public boolean insertCartItem(int userId, CartItem item) throws SQLException {
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-    try {
-        // Establish database connection
-        conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        try {
+            // Establish database connection
+            conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
 
-        // Insert cart detail into the CartDetails table
-        String insertQuery = "INSERT INTO APP.CartDetails (UserID, ProductID, Quantity) VALUES (?, ?, ?)";
-        stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
-        stmt.setInt(1, userId);
-        stmt.setInt(2, item.getProduct().getId());
-        stmt.setInt(3, item.getQuantity());
+            // Insert cart detail into the CartDetails table
+            String insertQuery = "INSERT INTO APP.CartDetails (UserID, ProductID, Quantity) VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, item.getProduct().getId());
+            stmt.setInt(3, item.getQuantity());
 
-        int affectedRows = stmt.executeUpdate();
+            int affectedRows = stmt.executeUpdate();
 
-        if (affectedRows > 0) {
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                int cartDetailId = rs.getInt(1);
-                item.setId(cartDetailId); // Set generated CartDetailID
-                return true;
+            if (affectedRows > 0) {
+                rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int cartDetailId = rs.getInt(1);
+                    item.setId(cartDetailId); // Set generated CartDetailID
+                    return true;
+                }
+            }
+
+            return false;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Error inserting item into cart: " + e.getMessage());
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
             }
         }
-
-        return false;
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        throw new SQLException("Error inserting item into cart: " + e.getMessage());
-    } finally {
-        if (rs != null) rs.close();
-        if (stmt != null) stmt.close();
-        if (conn != null) conn.close();
     }
-}
-
 
     // Get all cart items for a user
     public List<CartItem> getCartItems(int userId) {
@@ -90,8 +95,7 @@ public class CartDAO {
                     + "p.PRODUCTNAME, p.DESCRIPTION, p.CATEGORY, p.PRICE, p.STOCK_QUANTITY, p.IMAGE_URL "
                     + "FROM APP.CartDetails cd "
                     + "JOIN APP.PRODUCTS p ON cd.ProductID = p.PRODUCT_ID "
-                    + "WHERE cd.UserID = ?"; // Filter by UserID directly
-
+                    + "WHERE cd.UserID = ?";
             stmt = conn.prepareStatement(itemsQuery);
             stmt.setInt(1, userId); // Pass userId to fetch cart items for that user
             rs = stmt.executeQuery();
@@ -109,9 +113,8 @@ public class CartDAO {
 
                 // Create CartItem object
                 CartItem item = new CartItem();
-                item.setId(rs.getInt("CartDetailID"));
                 item.setProduct(product);
-                item.setQuantity(rs.getInt("Quantity"));
+                item.setQuantity(rs.getInt("Quantity"));  // Corrected to "Quantity" from the query
 
                 cartItems.add(item);
             }
@@ -136,7 +139,6 @@ public class CartDAO {
 
         return cartItems;
     }
-
 
     // Update cart item quantity
     public boolean updateCartItem(int cartDetailsId, int quantity) {
@@ -417,6 +419,59 @@ public class CartDAO {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean upsertCartItem(int userId, CartItem item) throws SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+
+            // First, check if the product already exists in cart
+            String selectQuery = "SELECT quantity FROM APP.CartDetails WHERE UserId = ? AND ProductId = ?";
+            stmt = conn.prepareStatement(selectQuery);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, item.getProduct().getId());
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                // Product exists → Update quantity
+                int existingQuantity = rs.getInt("quantity");
+                int newQuantity = existingQuantity + item.getQuantity();
+
+                String updateQuery = "UPDATE APP.CartDetails SET Quantity = ? WHERE UserId = ? AND ProductId = ?";
+                stmt = conn.prepareStatement(updateQuery);
+                stmt.setInt(1, newQuantity);
+                stmt.setInt(2, userId);
+                stmt.setInt(3, item.getProduct().getId());
+
+                int rowsUpdated = stmt.executeUpdate();
+                return rowsUpdated > 0;
+            } else {
+                // Product does not exist → Insert new
+                String insertQuery = "INSERT INTO APP.CartDetails (UserID, ProductID, Quantity) VALUES (?, ?, ?)";
+                stmt = conn.prepareStatement(insertQuery);
+                stmt.setInt(1, userId);
+                stmt.setInt(2, item.getProduct().getId());
+                stmt.setInt(3, item.getQuantity());
+
+                int rowsInserted = stmt.executeUpdate();
+                return rowsInserted > 0;
+            }
+
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
             }
         }
     }

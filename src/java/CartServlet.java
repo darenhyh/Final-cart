@@ -71,7 +71,8 @@ public class CartServlet extends HttpServlet {
 
         CartDAO cartDAO = new CartDAO();
         try {
-            boolean isInserted = cartDAO.insertCartItem(userID, item);  // Insert into database
+            boolean isInserted = cartDAO.upsertCartItem(userID, item);
+            // Insert into database
             if (!isInserted) {
                 throw new ServletException("Failed to insert item into database.");
             }
@@ -94,9 +95,9 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
-        
+
         int userID = Integer.parseInt((String) request.getSession().getAttribute("user_id"));
         List<CartItem> cart = (List<CartItem>) session.getAttribute("cart");
 
@@ -106,10 +107,9 @@ public class CartServlet extends HttpServlet {
             session.setAttribute("cart", cart);
         }
         CartDAO cartDAO = new CartDAO();
-        
+
         List<CartItem> cartItems = cartDAO.getCartItems(userID);
 
-        
         // Forward to a JSP page to display the cart (or send a response in some other way)
         request.setAttribute("UserID", userID);
         request.setAttribute("cartItems", cartItems);
