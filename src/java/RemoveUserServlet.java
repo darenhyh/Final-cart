@@ -14,9 +14,9 @@ public class RemoveUserServlet extends HttpServlet {
 
         if (userId != null) {
             String driverName = "org.apache.derby.jdbc.ClientDriver";
-            String connectionUrl = "jdbc:derby://localhost:1527/Client";
-            String dbUserId = "nbuser";
-            String dbPassword = "nbuser";
+            String connectionUrl = "jdbc:derby://localhost:1527/product";
+            String dbUserId = "user";
+            String dbPassword = "pass";
 
             Connection connection = null;
             PreparedStatement preparedStatement = null;

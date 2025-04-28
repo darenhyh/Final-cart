@@ -1,29 +1,32 @@
 package test;
 
 import dao.CartDAO;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import model.CartItem;
 import java.util.List;
 
 public class CartDAOTest {
+
     public static void main(String[] args) {
-        // Testing the getCartItems method
         CartDAO cartDAO = new CartDAO();
-        int testUserId = 5;  // Replace with the UserID you want to test
 
-        // Fetch cart items for the given user
-        List<CartItem> cartItems = cartDAO.getCartItems(testUserId);
+        int testUserId = 5;      // 👈 Put a valid UserID here
+        int testProductId = 1;   // 👈 Put a valid ProductID from CartDetails here
 
-        if (cartItems.isEmpty()) {
-            System.out.println("No items found in the cart.");
+        boolean success = cartDAO.removeCartItem(testUserId, testProductId);
+
+        if (success) {
+            System.out.println("Cart item with UserID " + testUserId + " and ProductID " + testProductId + " was successfully removed.");
         } else {
-            System.out.println("Items in the cart for User ID " + testUserId + ":");
-            for (CartItem item : cartItems) {
-                System.out.println("ProductID: " + item.getProduct().getId());
-            }
+            System.out.println("Failed to remove cart item with UserID " + testUserId + " and ProductID " + testProductId + ".");
         }
     }
 }
-            // Test parameters
+// Test parameters
 //        int testUserId = 1; // Use a user ID that exists in your database
 //        // Test 1: Get cart items (should return empty list if none exist)
 //        System.out.println("Test 1: Get cart items for user " + testUserId);
@@ -112,9 +115,9 @@ public class CartDAOTest {
 //        System.out.println("\nTest 5: Get cart count");
 //        int count = cartDAO.getCartItemCount(testUserId);
 //        System.out.println("Cart count: " + count);
-            // Test 6: Remove an item
-            // Uncomment this to test removal if needed
-            /*if (!cartItems.isEmpty()) {
+// Test 6: Remove an item
+// Uncomment this to test removal if needed
+/*if (!cartItems.isEmpty()) {
             int cartDetailId = cartItems.get(0).getId();
             System.out.println("\nTest 6: Remove cart item");
             boolean removeResult = cartDAO.removeCartItem(cartDetailId);

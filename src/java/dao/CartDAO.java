@@ -140,28 +140,33 @@ public class CartDAO {
         return cartItems;
     }
 
-    // Update cart item quantity
-    public boolean updateCartItem(int cartDetailsId, int quantity) {
+    public boolean updateCartItem(int userId, int productId, int quantity) {
         Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
-            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            // Establish the database connection
             conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
 
-            String updateQuery = "UPDATE APP.CartDetails SET Quantity = ? WHERE CartDetailID = ?";
+            // Update query based on userId and productId
+            String updateQuery = "UPDATE APP.CartDetails SET Quantity = ? WHERE UserID = ? AND ProductID = ?";
             stmt = conn.prepareStatement(updateQuery);
-            stmt.setInt(1, quantity);
-            stmt.setInt(2, cartDetailsId);
 
+            // Set the new quantity, userId, and productId
+            stmt.setInt(1, quantity);  // New quantity
+            stmt.setInt(2, userId);    // User ID
+            stmt.setInt(3, productId); // Product ID
+
+            // Execute the update and check if rows were affected
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();  // Log any SQL exceptions
+            return false;  // Return false if the update fails
         } finally {
             try {
+                // Ensure resources are closed
                 if (stmt != null) {
                     stmt.close();
                 }
@@ -169,13 +174,13 @@ public class CartDAO {
                     conn.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                e.printStackTrace();  // Log any exceptions during cleanup
             }
         }
     }
 
     // Remove item from cart
-    public boolean removeCartItem(int cartDetailsId) {
+    public boolean removeCartItem(int userId, int productId) {
         Connection conn = null;
         PreparedStatement stmt = null;
 
@@ -183,9 +188,10 @@ public class CartDAO {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
             conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
 
-            String deleteQuery = "DELETE FROM APP.CartDetails WHERE CartDetailID = ?";
+            String deleteQuery = "DELETE FROM APP.CartDetails WHERE UserID = ? AND ProductID = ?";
             stmt = conn.prepareStatement(deleteQuery);
-            stmt.setInt(1, cartDetailsId);
+            stmt.setInt(1, userId);    // User ID
+            stmt.setInt(2, productId); // Product ID
 
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -207,7 +213,6 @@ public class CartDAO {
         }
     }
 
-    // Clear all items from a user's cart
     public boolean clearCart(int userId) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -218,19 +223,34 @@ public class CartDAO {
             conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
 
             // Get cart ID for user
-            String cartQuery = "SELECT CartID FROM APP.Cart WHERE UserID = ?";
-            stmt = conn.prepareStatement(cartQuery);
+            String selectQuery = "SELECT CartID FROM APP.Cart WHERE UserID = ?";
+            stmt = conn.prepareStatement(selectQuery);
             stmt.setInt(1, userId);
             rs = stmt.executeQuery();
 
             if (rs.next()) {
                 int cartId = rs.getInt("CartID");
 
-                // Delete all items in the cart
-                String deleteQuery = "DELETE FROM APP.CartDetails WHERE CartID = ?";
-                stmt = conn.prepareStatement(deleteQuery);
-                stmt.setInt(1, cartId);
-                stmt.executeUpdate();
+                // Delete from CartDetails
+                String deleteCartDetailsQuery = "DELETE FROM APP.CartDetails WHERE CartID = ?";
+                PreparedStatement deleteCartDetailsStmt = conn.prepareStatement(deleteCartDetailsQuery);
+                deleteCartDetailsStmt.setInt(1, cartId);
+                deleteCartDetailsStmt.executeUpdate();
+                deleteCartDetailsStmt.close();
+
+                // Delete from CheckoutDetails
+                String deleteCheckoutDetailsQuery = "DELETE FROM APP.CheckoutDetails WHERE CartID = ?";
+                PreparedStatement deleteCheckoutDetailsStmt = conn.prepareStatement(deleteCheckoutDetailsQuery);
+                deleteCheckoutDetailsStmt.setInt(1, cartId);
+                deleteCheckoutDetailsStmt.executeUpdate();
+                deleteCheckoutDetailsStmt.close();
+
+                // Delete from Cart
+                String deleteCartQuery = "DELETE FROM APP.Cart WHERE CartID = ?";
+                PreparedStatement deleteCartStmt = conn.prepareStatement(deleteCartQuery);
+                deleteCartStmt.setInt(1, cartId);
+                deleteCartStmt.executeUpdate();
+                deleteCartStmt.close();
 
                 return true;
             }
