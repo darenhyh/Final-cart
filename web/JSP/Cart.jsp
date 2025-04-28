@@ -262,6 +262,22 @@
             }
         </style>
         <script>
+            // Function to update the displayed item price when quantity changes
+            function updatePrice(select, unitPrice) {
+                const quantity = parseInt(select.value);
+                const totalPrice = (unitPrice * quantity).toFixed(2);
+
+                // Find the price display element
+                const priceElement = select.closest('.item-details').querySelector('.item-price');
+
+                // Update the price display
+                priceElement.innerHTML = 'RM' + totalPrice;
+
+                // Submit the form to update the cart on the server
+                select.form.submit();
+            }
+        </script>
+        <script>
             function updatePrice(select, unitPrice) {
                 const quantity = parseInt(select.value);
                 const totalPrice = (unitPrice * quantity).toFixed(2);
@@ -350,6 +366,7 @@
                                 <% }%>
                             </select>
                         </form>
+
 
                         <div class="item-actions">
                             <form action="<%= request.getContextPath()%>/RemoveFromCartServlet" method="POST">
